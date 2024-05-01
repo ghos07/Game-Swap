@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody rb;
     public Camera cam;
+    public GameObject indicator;
+    public LayerMask lookable;
     public float speed = 1.0f;
     public float acceleration = 50;
     public float maxStamina = 10;
@@ -37,6 +39,20 @@ public class PlayerMovement : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        DoMovement();
+        DoIndicator();
+    }
+
+    private void DoIndicator()
+    {
+        if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, 100, lookable))
+        {
+            indicator.transform.position = hit.point;
+        }
+    }
+
+    private void DoMovement()
     {
         float mouseUp = Input.GetAxis("Mouse Y");
         float mouseRight = Input.GetAxis("Mouse X");
@@ -69,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             bobTimer = Mathf.Clamp(bobTimer + Time.deltaTime, 0, bobInterval);
-            cam.transform.localPosition = Vector3.up * Mathf.Lerp(oldHeadHeight, headTargetPos, bobTimer * (1/bobInterval));
+            cam.transform.localPosition = Vector3.up * Mathf.Lerp(oldHeadHeight, headTargetPos, bobTimer * (1 / bobInterval));
         }
 
         move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
