@@ -24,12 +24,13 @@ public class Pickup : MonoBehaviour
             {
                 Collider[] col = Physics.OverlapSphere(transform.position, 0.5f, mask);
                 if (col == null) return;
-                if(!col[0].TryGetComponent<Pickupable>(out Pickupable pickupable))
-                {
-                    return;
-                }
+                
                 if(col.Length > 0)
                 {
+                    if (!col[0].TryGetComponent<Pickupable>(out Pickupable pickupable))
+                    {
+                        return;
+                    }
                     deadly = col[0].gameObject;
                     pickupable.holder = transform;
                     pickupable.Grabbed();
