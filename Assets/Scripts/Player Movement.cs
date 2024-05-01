@@ -27,6 +27,9 @@ public class PlayerMovement : MonoBehaviour
     private float oldHeadHeight = 0;
     private float walkingSpeed;
     private float walkingBobInterval;
+    public float grabDistance = 5;
+    private bool holdingObject = false;
+    public float grabStrength = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +38,8 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main;
         walkingSpeed = speed;
         walkingBobInterval = bobInterval;
+
+        GameReferences.playerMovement = this;
     }
 
     // Update is called once per frame
@@ -46,9 +51,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void DoIndicator()
     {
-        if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, 100, lookable))
+        if(indicator.gameObject.GetComponent<Pickup>().deadly != null)
         {
+            indicator.transform.position = Camera.main.transform.position + Camera.main.transform.forward * grabDistance;
+            indicator.GetComponent<Renderer>().enabled = false;
+            return;
+        }
+
+        if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, grabDistance, lookable))
+        {
+            indicator.GetComponent<Renderer>().enabled = true;
             indicator.transform.position = hit.point;
+        }
+        else
+        {
+            indicator.GetComponent<Renderer>().enabled = false;
+            indicator.transform.position = Camera.main.transform.position + Camera.main.transform.forward * grabDistance;
         }
     }
 

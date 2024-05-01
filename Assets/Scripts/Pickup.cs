@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour
 {
-    GameObject deadly;
+    public GameObject deadly;
     public LayerMask mask;
     // Update is called once per frame
     void Update()
@@ -13,17 +13,26 @@ public class Pickup : MonoBehaviour
         {
             if(deadly != null)
             {
-                deadly.transform.parent = null;
+                if (!deadly.TryGetComponent<Pickupable>(out Pickupable pickupable))
+                {
+                    return;
+                }
+                pickupable.Released();
+                pickupable.holder = null;
                 deadly = null;
             } else 
             {
                 Collider[] col = Physics.OverlapSphere(transform.position, 0.5f, mask);
                 if (col == null) return;
+                if(!col[0].TryGetComponent<Pickupable>(out Pickupable pickupable))
+                {
+                    return;
+                }
                 if(col.Length > 0)
                 {
                     deadly = col[0].gameObject;
-                    deadly.transform.parent = transform;
-                    deadly.transform.localPosition = Vector3.zero;
+                    pickupable.holder = transform;
+                    pickupable.Grabbed();
                 }
             }
         }
